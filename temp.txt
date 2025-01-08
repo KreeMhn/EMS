@@ -1,0 +1,52 @@
+
+
+
+<?php
+include ('./components/usernavbar.php');
+function isLoggedIn()
+{
+
+    // Check if the 'username' session variable exists
+    return isset($_SESSION['username']);
+}
+
+// If the user is not logged in, redirect them to the login page
+if (!isLoggedIn()) {
+    echo '<script>
+    // Redirect to index.php after the page has loaded
+    window.location.href = 'index.php';
+</script>';
+    exit;
+}
+$username = $_SESSION['username'];
+// Escape the username to avoid SQL injection
+$username_escaped = $conn->real_escape_string($username);
+
+$sql = 'SELECT UserId FROM userdb WHERE Username = '$username_escaped'';
+$res = $conn->query($sql);
+
+if ($res->num_rows > 0) {
+    $row = $res->fetch_assoc();
+    $userId = $row['UserId'];
+} else {
+    echo '<p style='margin: 50px auto; text-align: center;'>User not found</p>';
+    exit;
+}
+$sql = 'SELECT Firstname, Lastname, Userid, Bloodgroup, Gender, Tempadd,
+ Tempcity, Tempcnty, Peradd, Percity, Percnty, Degree, Institutename,
+  Grade, Passedyr, Expdesc, Bankname, Accname, Accnum, Pannum FROM personalinfo WHERE Userid = '$userId'';
+$result = $conn->query($sql);
+
+if ($result->num_rows > 0) {
+    $user = $result->fetch_assoc();
+} else {
+    echo '<h1 style='margin: 50px auto; text-align: center;'>User not found</h1>';
+    exit;
+}
+
+?>
+
+
+
+
+
